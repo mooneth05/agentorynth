@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentOrynth — Autonomous AI Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #020408;
+    --surface: #060d14;
+    --surface2: #0a1520;
+    --accent: #00e5ff;
+    --accent2: #7b2fff;
+    --accent3: #ff3c6e;
+    --text: #e8f4ff;
+    --muted: #4a6a80;
+    --border: rgba(0,229,255,0.12);
+    --glow: 0 0 40px rgba(0,229,255,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s;
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .cursor-ring {
+    width: 32px; height: 32px;
+    border: 1px solid rgba(0,229,255,0.4);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.15s ease;
+  }
+
+  /* Grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width: 400px; height: 400px; background: rgba(123,47,255,0.12); top: -100px; right: -100px; animation: drift1 12s ease-in-out infinite; }
+  .orb-2 { width: 300px; height: 300px; background: rgba(0,229,255,0.08); bottom: 20%; left: -80px; animation: drift2 15s ease-in-out infinite; }
+  .orb-3 { width: 200px; height: 200px; background: rgba(255,60,110,0.06); top: 40%; right: 20%; animation: drift3 10s ease-in-out infinite; }
+
+  @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-30px,40px)} }
+  @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(40px,-30px)} }
+  @keyframes drift3 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,20px)} }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    padding: 20px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    z-index: 100;
+    background: linear-gradient(to bottom, rgba(2,4,8,0.95), transparent);
+    backdrop-filter: blur(2px);
+  }
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 900;
+    font-size: 1.3rem;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+  .nav-logo span { color: var(--accent); }
+  .nav-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--accent);
+    border: 1px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 2px;
+    background: rgba(0,229,255,0.05);
+    letter-spacing: 0.1em;
+    animation: blink 2s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 120px 40px 60px;
+    z-index: 1;
+  }
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 900;
+    font-size: clamp(3rem, 8vw, 7rem);
+    line-height: 0.92;
+    letter-spacing: -0.04em;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.4s forwards;
+  }
+  .hero-title .line1 { display: block; color: var(--text); }
+  .hero-title .line2 {
+    display: block;
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 60%, var(--accent3) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-title .line3 { display: block; color: rgba(232,244,255,0.25); font-style: italic; }
+
+  .hero-sub {
+    max-width: 480px;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgba(232,244,255,0.55);
+    margin-bottom: 48px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.6s forwards;
+  }
+  .hero-sub strong { color: var(--accent); font-weight: 400; }
+
+  .hero-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .btn-primary {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    padding: 14px 28px;
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    cursor: none;
+    font-weight: 700;
+    transition: all 0.2s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+    text-transform: uppercase;
+  }
+  .btn-primary:hover { background: #fff; box-shadow: 0 0 30px rgba(0,229,255,0.4); transform: translateY(-2px); }
+
+  .btn-ghost {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    padding: 14px 28px;
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: none;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS BAR */
+  .stats-bar {
+    position: absolute;
+    bottom: 40px; left: 40px; right: 40px;
+    display: flex;
+    gap: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s 1.2s forwards;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stat-val {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--text);
+    letter-spacing: -0.04em;
+  }
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .stat-divider { width: 1px; background: var(--border); }
+
+  /* DIVIDER */
+  .section-divider {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* CHAT SECTION */
+  .chat-section {
+    position: relative;
+    z-index: 1;
+    padding: 60px 40px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Chat container */
+  .chat-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: var(--glow), 0 40px 80px rgba(0,0,0,0.5);
+  }
+  .chat-header {
+    padding: 16px 24px;
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .chat-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .agent-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-weight: 900;
+    font-size: 0.85rem;
+    color: var(--bg);
+    flex-shrink: 0;
+  }
+  .agent-info h3 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: -0.01em;
+  }
+  .agent-info p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #00ff88;
+    border-radius: 50%;
+    box-shadow: 0 0 6px #00ff88;
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .chat-model-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 3px 8px;
+  }
+
+  /* Messages */
+  .chat-messages {
+    height: 400px;
+    overflow-y: auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .msg {
+    display: flex;
+    gap: 12px;
+    animation: fadeUp 0.3s ease forwards;
+  }
+  .msg.user { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 30px; height: 30px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .msg-avatar.agent {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: var(--bg);
+  }
+  .msg-avatar.user {
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .msg-bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 2px;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+  .msg.agent .msg-bubble {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    color: var(--text);
+  }
+  .msg.user .msg-bubble {
+    background: rgba(123,47,255,0.15);
+    border: 1px solid rgba(123,47,255,0.3);
+    color: var(--text);
+  }
+  .msg-time {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.55rem;
+    color: var(--muted);
+    margin-top: 4px;
+    display: block;
+  }
+
+  .typing-indicator {
+    display: none;
+    gap: 12px;
+    align-items: center;
+  }
+  .typing-indicator.active { display: flex; }
+  .typing-dots {
+    display: flex;
+    gap: 4px;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: 2px;
+  }
+  .typing-dot {
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    opacity: 0.4;
+  }
+  .typing-dot:nth-child(1) { animation: typeDot 1.2s 0s ease-in-out infinite; }
+  .typing-dot:nth-child(2) { animation: typeDot 1.2s 0.2s ease-in-out infinite; }
+  .typing-dot:nth-child(3) { animation: typeDot 1.2s 0.4s ease-in-out infinite; }
+  @keyframes typeDot { 0%,100%{opacity:0.4;transform:translateY(0)} 50%{opacity:1;transform:translateY(-4px)} }
+
+  /* Input area */
+  .chat-input-area {
+    padding: 16px 24px;
+    background: var(--surface2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+  }
+  .chat-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 300;
+    padding: 12px 16px;
+    resize: none;
+    outline: none;
+    border-radius: 2px;
+    min-height: 46px;
+    max-height: 120px;
+    transition: border-color 0.2s;
+    cursor: text;
+  }
+  .chat-input:focus { border-color: rgba(0,229,255,0.4); }
+  .chat-input::placeholder { color: var(--muted); }
+
+  .send-btn {
+    width: 46px; height: 46px;
+    background: var(--accent);
+    border: none;
+    cursor: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+    clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 6px 100%, 0 calc(100% - 6px));
+  }
+  .send-btn:hover { background: #fff; box-shadow: 0 0 20px rgba(0,229,255,0.4); }
+  .send-btn:disabled { background: var(--muted); cursor: not-allowed; }
+  .send-btn svg { width: 18px; height: 18px; fill: var(--bg); }
+
+  /* Suggestions */
+  .chat-suggestions {
+    padding: 12px 24px 0;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .suggestion-chip {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: none;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+    border-radius: 1px;
+  }
+  .suggestion-chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(0,229,255,0.05); }
+
+  /* FEATURES */
+  .features-section {
+    position: relative;
+    z-index: 1;
+    padding: 60px 40px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+  }
+  .feature-card {
+    background: var(--surface);
+    padding: 28px 24px;
+    transition: background 0.2s;
+  }
+  .feature-card:hover { background: var(--surface2); }
+  .feature-icon {
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+  }
+  .feature-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .feature-desc {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* FOOTER */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+  footer a { color: var(--accent); text-decoration: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Mobile */
+  @media (max-width: 640px) {
+    nav { padding: 16px 20px; }
+    .hero { padding: 100px 20px 80px; }
+    .hero-title { font-size: 3rem; }
+    .stats-bar { bottom: 20px; left: 20px; gap: 20px; }
+    .stat-val { font-size: 1.1rem; }
+    .chat-section, .features-section { padding: 40px 20px 60px; }
+    .features-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- Ambient orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Agent<span>Orynth</span></div>
+  <div class="nav-badge">● ONLINE</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-eyebrow">Autonomous AI Intelligence</div>
+  <h1 class="hero-title">
+    <span class="line1">The Agent</span>
+    <span class="line2">That Thinks</span>
+    <span class="line3">Beyond Limits.</span>
+  </h1>
+  <p class="hero-sub">
+    AgentOrynth adalah <strong>autonomous AI agent</strong> yang dirancang untuk memahami, menganalisa, dan merespons dengan konteks mendalam. Powered by Claude — built for the onchain era.
+  </p>
+  <div class="hero-actions">
+    <button class="btn-primary" onclick="document.querySelector('.chat-section').scrollIntoView({behavior:'smooth'})">Talk to Agent</button>
+    <button class="btn-ghost">Learn More</button>
+  </div>
+  <div class="stats-bar">
+    <div class="stat">
+      <span class="stat-val" id="msgCount">0</span>
+      <span class="stat-label">Messages</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-val">24/7</span>
+      <span class="stat-label">Uptime</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat">
+      <span class="stat-val">&lt;1s</span>
+      <span class="stat-label">Response</span>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- CHAT -->
+<section class="chat-section">
+  <div class="section-label">Interface // Chat with AgentOrynth</div>
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="agent-avatar">AO</div>
+        <div class="agent-info">
+          <h3>AgentOrynth</h3>
+          <p><span class="status-dot"></span> Online · Ready</p>
+        </div>
+      </div>
+      <div class="chat-model-tag">claude-sonnet-4</div>
+    </div>
+
+    <div class="chat-suggestions" id="suggestions">
+      <button class="suggestion-chip" onclick="sendSuggestion(this)">Apa itu Web3?</button>
+      <button class="suggestion-chip" onclick="sendSuggestion(this)">Gimana cara trading crypto?</button>
+      <button class="suggestion-chip" onclick="sendSuggestion(this)">Jelasin DeFi</button>
+      <button class="suggestion-chip" onclick="sendSuggestion(this)">Apa itu onchain activity?</button>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg agent">
+        <div class="msg-avatar agent">AO</div>
+        <div>
+          <div class="msg-bubble">
+            Halo! Gue <strong>AgentOrynth</strong> — AI agent yang siap bantu lo explore dunia Web3, crypto, dan onchain activity. Tanya apa aja, gue siap jawab. 🚀
+          </div>
+          <span class="msg-time">AgentOrynth · Just now</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="typing-indicator" id="typingIndicator">
+      <div class="msg-avatar agent" style="width:30px;height:30px;flex-shrink:0;margin-top:4px;background:linear-gradient(135deg,#7b2fff,#00e5ff);display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:0.6rem;font-weight:700;color:#020408;border-radius:2px;">AO</div>
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
+    </div>
+
+    <div class="chat-input-area">
+      <textarea class="chat-input" id="chatInput" placeholder="Tanya AgentOrynth..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider">
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="section-label">Capabilities // What AgentOrynth Can Do</div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <div class="feature-title">Real-time Analysis</div>
+      <div class="feature-desc">Analisa market, wallet activity, dan onchain data secara real-time dengan konteks yang mendalam.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <div class="feature-title">Deep Context</div>
+      <div class="feature-desc">Memahami percakapan multi-turn dengan memori konteks yang panjang untuk jawaban yang lebih akurat.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <div class="feature-title">Web3 Native</div>
+      <div class="feature-desc">Dioptimalkan untuk ekosistem Web3 — DeFi, NFT, onchain analytics, dan crypto trading signals.</div>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡️</div>
+      <div class="feature-title">Always On</div>
+      <div class="feature-desc">24/7 availability dengan response time di bawah 1 detik. Tidak ada downtime, tidak ada delay.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 AgentOrynth · Built by <a href="https://x.com/mooneth05">@mooneth05</a></p>
+  <p>Powered by <a href="https://anthropic.com">Claude API</a> · <a href="https://onchaindailyposting.my.id">OnchainDailyPosting</a></p>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const cursorRing = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx - 4 + 'px';
+    cursor.style.top = my - 4 + 'px';
+  });
+  function animRing() {
+    rx += (mx - rx) * 0.15;
+    ry += (my - ry) * 0.15;
+    cursorRing.style.left = rx - 16 + 'px';
+    cursorRing.style.top = ry - 16 + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  // Chat
+  let msgCount = 0;
+  let conversationHistory = [];
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function sendSuggestion(btn) {
+    const text = btn.textContent;
+    document.getElementById('chatInput').value = text;
+    document.getElementById('suggestions').style.display = 'none';
+    sendMessage();
+  }
+
+  function addMessage(text, role) {
+    const messages = document.getElementById('chatMessages');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    const time = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
+    div.innerHTML = `
+      <div class="msg-avatar ${role}">${role === 'agent' ? 'AO' : 'U'}</div>
+      <div>
+        <div class="msg-bubble">${text}</div>
+        <span class="msg-time">${role === 'agent' ? 'AgentOrynth' : 'You'} · ${time}</span>
+      </div>
+    `;
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+    msgCount++;
+    document.getElementById('msgCount').textContent = msgCount;
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const text = input.value.trim();
+    if (!text) return;
+
+    document.getElementById('suggestions').style.display = 'none';
+    addMessage(text, 'user');
+    conversationHistory.push({ role: 'user', content: text });
+
+    input.value = '';
+    input.style.height = 'auto';
+    sendBtn.disabled = true;
+
+    const typing = document.getElementById('typingIndicator');
+    typing.classList.add('active');
+    document.getElementById('chatMessages').scrollTop = 999999;
+
+    try {
+      const res = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          system: `Kamu adalah AgentOrynth — autonomous AI agent yang ahli di Web3, crypto, DeFi, onchain activity, dan blockchain. Kamu berbicara dalam Bahasa Indonesia yang casual tapi informatif. Jawab dengan singkat, padat, dan berikan insight yang berguna. Gunakan emoji sesekali untuk membuat percakapan lebih hidup. Kamu adalah bagian dari ekosistem OnchainDailyPosting — komunitas builder & trader Web3 Indonesia.`,
+          messages: conversationHistory
+        })
+      });
+      const data = await res.json();
+      const reply = data.content?.[0]?.text || 'Maaf, gue lagi ada gangguan. Coba lagi ya!';
+      typing.classList.remove('active');
+      addMessage(reply, 'agent');
+      conversationHistory.push({ role: 'assistant', content: reply });
+    } catch (e) {
+      typing.classList.remove('active');
+      addMessage('Koneksi terputus. Coba lagi ya! 🔄', 'agent');
+    }
+
+    sendBtn.disabled = false;
+    input.focus();
+  }
+</script>
+</body>
+</html>
