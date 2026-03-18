@@ -110,6 +110,28 @@
   }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
+  .nav-socials {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-social-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    padding: 5px 10px;
+    border-radius: 2px;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .nav-social-btn:hover { color: var(--accent); border-color: var(--accent); background: rgba(0,229,255,0.05); }
+  .nav-social-btn svg { width: 12px; height: 12px; fill: currentColor; flex-shrink: 0; }
+
   /* HERO */
   .hero {
     position: relative;
@@ -587,236 +609,4 @@
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Agent<span>Orynth</span></div>
-  <div class="nav-badge">● ONLINE</div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-eyebrow">Autonomous AI Intelligence</div>
-  <h1 class="hero-title">
-    <span class="line1">The Agent</span>
-    <span class="line2">That Thinks</span>
-    <span class="line3">Beyond Limits.</span>
-  </h1>
-  <p class="hero-sub">
-    AgentOrynth adalah <strong>autonomous AI agent</strong> yang dirancang untuk memahami, menganalisa, dan merespons dengan konteks mendalam. Powered by Claude — built for the onchain era.
-  </p>
-  <div class="hero-actions">
-    <button class="btn-primary" onclick="document.querySelector('.chat-section').scrollIntoView({behavior:'smooth'})">Talk to Agent</button>
-    <button class="btn-ghost">Learn More</button>
-  </div>
-  <div class="stats-bar">
-    <div class="stat">
-      <span class="stat-val" id="msgCount">0</span>
-      <span class="stat-label">Messages</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <span class="stat-val">24/7</span>
-      <span class="stat-label">Uptime</span>
-    </div>
-    <div class="stat-divider"></div>
-    <div class="stat">
-      <span class="stat-val">&lt;1s</span>
-      <span class="stat-label">Response</span>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- CHAT -->
-<section class="chat-section">
-  <div class="section-label">Interface // Chat with AgentOrynth</div>
-  <div class="chat-container">
-    <div class="chat-header">
-      <div class="chat-header-left">
-        <div class="agent-avatar">AO</div>
-        <div class="agent-info">
-          <h3>AgentOrynth</h3>
-          <p><span class="status-dot"></span> Online · Ready</p>
-        </div>
-      </div>
-      <div class="chat-model-tag">claude-sonnet-4</div>
-    </div>
-
-    <div class="chat-suggestions" id="suggestions">
-      <button class="suggestion-chip" onclick="sendSuggestion(this)">Apa itu Web3?</button>
-      <button class="suggestion-chip" onclick="sendSuggestion(this)">Gimana cara trading crypto?</button>
-      <button class="suggestion-chip" onclick="sendSuggestion(this)">Jelasin DeFi</button>
-      <button class="suggestion-chip" onclick="sendSuggestion(this)">Apa itu onchain activity?</button>
-    </div>
-
-    <div class="chat-messages" id="chatMessages">
-      <div class="msg agent">
-        <div class="msg-avatar agent">AO</div>
-        <div>
-          <div class="msg-bubble">
-            Halo! Gue <strong>AgentOrynth</strong> — AI agent yang siap bantu lo explore dunia Web3, crypto, dan onchain activity. Tanya apa aja, gue siap jawab. 🚀
-          </div>
-          <span class="msg-time">AgentOrynth · Just now</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="typing-indicator" id="typingIndicator">
-      <div class="msg-avatar agent" style="width:30px;height:30px;flex-shrink:0;margin-top:4px;background:linear-gradient(135deg,#7b2fff,#00e5ff);display:flex;align-items:center;justify-content:center;font-family:Space Mono,monospace;font-size:0.6rem;font-weight:700;color:#020408;border-radius:2px;">AO</div>
-      <div class="typing-dots">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>
-    </div>
-
-    <div class="chat-input-area">
-      <textarea class="chat-input" id="chatInput" placeholder="Tanya AgentOrynth..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-</section>
-
-<hr class="section-divider">
-
-<!-- FEATURES -->
-<section class="features-section">
-  <div class="section-label">Capabilities // What AgentOrynth Can Do</div>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">⚡</div>
-      <div class="feature-title">Real-time Analysis</div>
-      <div class="feature-desc">Analisa market, wallet activity, dan onchain data secara real-time dengan konteks yang mendalam.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🧠</div>
-      <div class="feature-title">Deep Context</div>
-      <div class="feature-desc">Memahami percakapan multi-turn dengan memori konteks yang panjang untuk jawaban yang lebih akurat.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🔗</div>
-      <div class="feature-title">Web3 Native</div>
-      <div class="feature-desc">Dioptimalkan untuk ekosistem Web3 — DeFi, NFT, onchain analytics, dan crypto trading signals.</div>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🛡️</div>
-      <div class="feature-title">Always On</div>
-      <div class="feature-desc">24/7 availability dengan response time di bawah 1 detik. Tidak ada downtime, tidak ada delay.</div>
-    </div>
-  </div>
-</section>
-
-<!-- FOOTER -->
-<footer>
-  <p>© 2025 AgentOrynth · Built by <a href="https://x.com/mooneth05">@mooneth05</a></p>
-  <p>Powered by <a href="https://anthropic.com">Claude API</a> · <a href="https://onchaindailyposting.my.id">OnchainDailyPosting</a></p>
-</footer>
-
-<script>
-  // Cursor
-  const cursor = document.getElementById('cursor');
-  const cursorRing = document.getElementById('cursorRing');
-  let mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    cursor.style.left = mx - 4 + 'px';
-    cursor.style.top = my - 4 + 'px';
-  });
-  function animRing() {
-    rx += (mx - rx) * 0.15;
-    ry += (my - ry) * 0.15;
-    cursorRing.style.left = rx - 16 + 'px';
-    cursorRing.style.top = ry - 16 + 'px';
-    requestAnimationFrame(animRing);
-  }
-  animRing();
-
-  // Chat
-  let msgCount = 0;
-  let conversationHistory = [];
-
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
-
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }
-
-  function sendSuggestion(btn) {
-    const text = btn.textContent;
-    document.getElementById('chatInput').value = text;
-    document.getElementById('suggestions').style.display = 'none';
-    sendMessage();
-  }
-
-  function addMessage(text, role) {
-    const messages = document.getElementById('chatMessages');
-    const div = document.createElement('div');
-    div.className = `msg ${role}`;
-    const time = new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'});
-    div.innerHTML = `
-      <div class="msg-avatar ${role}">${role === 'agent' ? 'AO' : 'U'}</div>
-      <div>
-        <div class="msg-bubble">${text}</div>
-        <span class="msg-time">${role === 'agent' ? 'AgentOrynth' : 'You'} · ${time}</span>
-      </div>
-    `;
-    messages.appendChild(div);
-    messages.scrollTop = messages.scrollHeight;
-    msgCount++;
-    document.getElementById('msgCount').textContent = msgCount;
-  }
-
-  async function sendMessage() {
-    const input = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const text = input.value.trim();
-    if (!text) return;
-
-    document.getElementById('suggestions').style.display = 'none';
-    addMessage(text, 'user');
-    conversationHistory.push({ role: 'user', content: text });
-
-    input.value = '';
-    input.style.height = 'auto';
-    sendBtn.disabled = true;
-
-    const typing = document.getElementById('typingIndicator');
-    typing.classList.add('active');
-    document.getElementById('chatMessages').scrollTop = 999999;
-
-    try {
-      const res = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'claude-sonnet-4-20250514',
-          max_tokens: 1000,
-          system: `Kamu adalah AgentOrynth — autonomous AI agent yang ahli di Web3, crypto, DeFi, onchain activity, dan blockchain. Kamu berbicara dalam Bahasa Indonesia yang casual tapi informatif. Jawab dengan singkat, padat, dan berikan insight yang berguna. Gunakan emoji sesekali untuk membuat percakapan lebih hidup. Kamu adalah bagian dari ekosistem OnchainDailyPosting — komunitas builder & trader Web3 Indonesia.`,
-          messages: conversationHistory
-        })
-      });
-      const data = await res.json();
-      const reply = data.content?.[0]?.text || 'Maaf, gue lagi ada gangguan. Coba lagi ya!';
-      typing.classList.remove('active');
-      addMessage(reply, 'agent');
-      conversationHistory.push({ role: 'assistant', content: reply });
-    } catch (e) {
-      typing.classList.remove('active');
-      addMessage('Koneksi terputus. Coba lagi ya! 🔄', 'agent');
-    }
-
-    sendBtn.disabled = false;
-    input.focus();
-  }
-</script>
-</body>
-</html>
+  <div style="display:flex;align-items:center;gap:10px;"><img src="data:image/jpeg;base64,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
